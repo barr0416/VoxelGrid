@@ -32,9 +32,52 @@ public class VoxelMap : MonoBehaviour {
 				CreateChunk(i, x, y);
 			}
 		}
+		
+		BoxCollider box = gameObject.AddComponent<BoxCollider>();
+		box.size = new Vector3(m_Size, m_Size);
 	}
 	
-	private void CreateChunk (int i, int x, int y) {
+	private void Update() {
+		//Get the input from the user
+		if (Input.GetMouseButtonDown(0)) {
+			//The info from the raycast
+			RaycastHit hitInfo;
+			//Check to see if anything was hit
+			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo)) {
+				//If the hit object is a game object
+				if (hitInfo.collider.gameObject == gameObject) {
+					//Edit the hit object
+					EditVoxels(transform.InverseTransformPoint(hitInfo.point));
+				}
+			}
+		}
+	}
+	
+	/// <summary>
+	/// Edits the voxels.
+	/// </summary>
+	/// <param name="point">Point.</param>
+	private void EditVoxels(Vector3 point) {
+		int voxelX = (int)((point.x + halfSize) / voxelSize);
+		int voxelY = (int)((point.y + halfSize) / voxelSize);
+		int chunkX = voxelX / m_VoxelResolution;
+		int chunkY = voxelY / m_VoxelResolution;
+		
+		VoxelStencil stencil = new VoxelStencil();
+		Debug.Log(voxelX + ", " + voxelY + " in chunk " + chunkX + ", " + chunkY);
+		
+		voxelX -= chunkX * m_VoxelResolution;
+		voxelY -= chunkY * m_VoxelResolution;
+		chunks[chunkY * m_ChunkResolution + chunkX].Apply(voxelX, voxelY, true, stencil);
+	}
+	
+	/// <summary>
+	/// Creates the chunk.
+	/// </summary>
+	/// <param name="i">The index.</param>
+	/// <param name="x">The x coordinate.</param>
+	/// <param name="y">The y coordinate.</param>
+	private void CreateChunk(int i, int x, int y) {
 		VoxelGrid chunk = Instantiate(m_VoxelGrid) as VoxelGrid;
 		chunk.Initialize(m_VoxelResolution, chunkSize);
 		chunk.transform.parent = transform;
