@@ -58,10 +58,6 @@ public class GridManager : MonoBehaviour {
 		gridNodes.Clear();
 		tileObjects.Clear();
 		
-		//Should be set up using a constant value
-		m_GridWidth = 5;
-		m_GridHeight = 5;
-		
 		//Set the grid to a new grid and with the constant values
 		grid = new int[m_GridWidth, m_GridHeight];
 		
@@ -100,6 +96,7 @@ public class GridManager : MonoBehaviour {
 				
 				
 				//Set the position anchor and grid
+				newTileObject.transform.parent = newNode.transform;
 				newTileObject.transform.position = newNode.transform.position;
 				newTileObject.GetComponent<GridObject>().SetAnchorPoints(x, y);
 				
@@ -119,6 +116,21 @@ public class GridManager : MonoBehaviour {
 				newTileObject.renderer.material = newMaterial;
 				tileObjects.Add(grid[x, y], newTileObject);
 			}
+		}
+	}
+	
+	private void Update() {
+
+	}
+
+	public void HandleCollision(int index, bool isOriginalColor) {
+		GameObject objectToModify = tileObjects[index] as GameObject;
+		
+		if(!isOriginalColor) {
+			objectToModify.renderer.material.color = Color.white;
+		}
+		else {
+			objectToModify.renderer.material.color = transparent;
 		}
 	}
 	

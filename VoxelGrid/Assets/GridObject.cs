@@ -21,9 +21,18 @@ public class GridObject : MonoBehaviour {
 	//Has the object been selected
 	private bool selected = false;
 	
-	private void Update() {
-		if(selected) {
-			//Handle any selection stuff here
+	void OnMouseDown() {
+		if(GridManager.instance) {
+			selected = true;
+			bool isOriginalColor = true;
+			
+			int thisNode = GridManager.instance.GetNodeIndex(anchorPointX, anchorPointY);
+			
+			if(this.gameObject.renderer.material.color != Color.white) {
+				isOriginalColor = false;
+			}
+			
+			GridManager.instance.HandleCollision(thisNode, isOriginalColor);
 		}
 	}
 	
